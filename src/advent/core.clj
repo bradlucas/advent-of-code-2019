@@ -1,6 +1,8 @@
-(ns advent.core)
+(ns advent.core
+  (:gen-class))
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
+(defn -main
+  [& args]
+  (do
+    (println "Advent of Code 2019")
+    (println "See each day's file")))

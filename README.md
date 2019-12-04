@@ -4,7 +4,8 @@
 
 ## Completed Days
 
-TODO
+- [Day01](https://github.com/bradlucas/advent-of-code-2019/blob/master/src/advent/day01.clj)
+
 
 ## License
 
