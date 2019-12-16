@@ -74,10 +74,6 @@
 [[0 0] [1 0] [2 0] [3 0]]
 "
   [positions {:keys [direction value] :as cmd}]
-  ;; (pp/pprint positions)
-  ;; (pp/pprint cmd)
-  ;; (pp/pprint direction)
-  ;; (pp/pprint value)
   (move positions direction value))
 
 (defn apply-commands
@@ -123,7 +119,6 @@
 
 (defn part1 [input]
   (let [paths (build-paths input)]
-    ;;(pp/pprint paths)
     (first (sort (find-min-of-distances (find-intersections paths))))))
 
 
@@ -144,7 +139,6 @@ U98,R91,D20,R16,D67,R40,U7,R15,U6,R7"]
     (str/split s #"\n")))
 
 
-
 (comment
  (part1 (example1))
  ;; => 159
@@ -162,3 +156,79 @@ U98,R91,D20,R16,D67,R40,U7,R15,U6,R7"]
 
 )
 
+
+
+;; ----------------------------------------------------------------------------------------------------
+;; Part 1
+
+
+;; Minimize the number of stesp
+
+;; Calculate the number of steps each wire takes to reach each intersection
+;; Choose the intersection where the sum of both wires's steps is the lowest
+
+
+;; Keep the paths
+;; Find the intersections
+;; For each calculate the number of steps to each intersection
+;; Return the minimum
+
+
+(defn build-path2
+  [instructions]
+  (let [cmds (parse-commands instructions)]
+    ;; ignore the starting node
+    (rest (apply-commands [0 0] cmds))))
+
+(defn build-paths2 [input-strings]
+  (loop [instructions input-strings
+         paths []]
+    (if (empty? instructions)
+      paths
+      (recur (rest instructions) (conj paths (build-path2 (first instructions)))))))
+
+
+(defn steps-til-node 
+  " Count the number nodes it will take to find node
+
+  (steps-til-node [[0 0] [0 1] [0 2] [0 3]] [0 3])
+  => 3
+"
+  [path node]
+  (loop [path path
+         cnt 1]  ;; because we ignored the starting node earlier
+    (if (or (empty? path) (= (first path) node))
+      cnt
+      (recur (next path) (inc cnt)))))
+
+(defn node-steps [node [p1 p2]]
+  (let [len1 (steps-til-node p1 node)
+        len2 (steps-til-node p2 node)
+        total (+ len1 len2)]
+    {:node node
+     :len1 len1
+     :len2 len2
+     :total total}))
+
+
+(defn part2 [input]
+  (let [paths (build-paths2 input)
+        intersections (find-intersections [(into #{} (first paths)) (into #{} (second paths))])]
+    (:total (apply min-key :total (map #(node-steps % paths) intersections)))))
+
+
+
+(comment
+  (part2 (example1))
+  ;; => {:node [158 -12], :len1 206, :len2 404, :total 610}
+  ;; => 610
+
+  (part2 (example2))
+  ;; => {:node [107 47], :len1 154, :len2 256, :total 410}
+  ;; =< 410
+
+
+  (time (part2 (input)))
+  ;; "Elapsed time: 610393.163737 msecs"
+  ;; 13698
+)
