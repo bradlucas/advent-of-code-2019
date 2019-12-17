@@ -34,17 +34,21 @@
         false
         (recur (next l))))))
 
-(defn de-pair [a b]
+(defn remove-matching-ex [a b]
   (if (= (last a) b)
     a
     (conj a b)))
 
 
+(defn remove-matching [l]
+  (reduce remove-matching-ex [] l))
+
 (defn is-password [num]
   ;; convert n to a series of integers
   (let [num (str num)
         before (count num)
-        l (reduce de-pair [] (mapv #(Integer/parseInt (str %)) num))
+        num-list (mapv #(Integer/parseInt (str %)) num)
+        l (remove-matching num-list)
         after (count l)]
     ;; (pp/pprint num)
     ;; (pp/pprint before)
@@ -68,3 +72,52 @@
   ;; advent.day04> (part1)
   ;; 2050
 )
+
+
+
+;; Part 2 
+;; Matching pair can not be part of a larger goup of matching digits
+
+
+;; ie 22 is oke
+;; but 222 is not unless there is another pair
+;; there can be larger than 2 pairs but there must be one pair
+
+
+(defn increasing-list2 [l]
+  (loop [l l]
+    (if (= 1 (count l))
+      true
+      (if (not (<= (first l) (second l)))
+        false
+        (recur (next l))))))
+
+(defn has-single-pair [pairs]
+  (some true? (map (fn [[k v]] (= v 1)) pairs)))
+
+(defn count-occurances [pairs]
+  (frequencies pairs))
+
+(defn filter-pairs [parts]
+  (filter (fn [[a b]] (= a b)) parts))
+
+(defn partitions [num-list]
+  (concat (partition 2 num-list) (partition 2 (rest num-list))))
+
+(defn num-to-list [num]
+  (mapv #(Integer/parseInt (str %)) (str num)))
+
+(defn is-password2 [num]
+  (let [num-list (num-to-list num)]
+    (if (has-single-pair (count-occurances (filter-pairs (partitions num-list))))
+      (increasing-list2 num-list))))
+
+(defn part2 []
+  (count (filter is-password2 (puzzle-input-range))))
+
+
+
+(comment
+  ;; advent.day04> (part2)
+  ;; 1390
+  )
