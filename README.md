@@ -5,6 +5,9 @@
 ## Completed Days
 
 - [Day01](https://github.com/bradlucas/advent-of-code-2019/blob/master/src/advent/day01.clj)
+- [Day02](https://github.com/bradlucas/advent-of-code-2019/blob/master/src/advent/day02.clj)
+- [Day03](https://github.com/bradlucas/advent-of-code-2019/blob/master/src/advent/day03.clj)
+- [Day04](https://github.com/bradlucas/advent-of-code-2019/blob/master/src/advent/day04.clj)
 
 
 ## License
