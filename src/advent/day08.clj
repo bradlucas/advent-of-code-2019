@@ -74,6 +74,74 @@ Layer 2: 789
 Then find the layer with the smallest number of 0s and for that layer
 return the number of 1s multiplied by the number of 2s."
   []
-  (let [lst (map process (partition-input (input) 6 25))]
+  (let [lst (map process (partition-input (input) 25 6))]
     (let [m (reduce min-map lst)]
       (* (get m 1) (get m 2)))))
+
+
+
+;; ----------------------------------------------------------------------------------------------------
+;; Part 2
+
+
+
+(defn get-data-layers []
+  (partition-input (input) 25 6))
+
+(defn get-pos [layer row col]
+  (nth (nth layer row) col))
+
+(defn get-pixel-data [data row col]
+  (map #(get-pos % row col) data))
+
+(defn get-value [pixel-data]
+  ;; 0 is black and 1 is white while 2 is transparent
+  ;; return the first 0 or 1 value found else return 2
+  (let [found (filter (fn [v] (or (= v 0) (= v 1))) pixel-data)]
+    (if (not (empty? found))
+      (first found)
+      2)))
+
+(defn build-image []
+  (let [layers (get-data-layers)
+        rows (count (first layers))
+        cols (count (first (first layers)))]
+
+    (map (fn [row] 
+           (map (fn [col] 
+                  ;; (get-value (get-pixel-data data row col))
+                  ;; [row col]
+                  {:row row
+                   :col col
+                   :value (get-value (get-pixel-data layers row col))}
+                  ) (range cols))) (range rows))
+    ))
+
+(defn print-image [i]
+  (map #(map :value %) i))
+
+
+(defn part2 []
+  (print-image (build-image)))
+
+
+(comment
+
+((1 1 1 0 0 1 0 0 1 0 1 1 1 0 0 1 1 1 1 0 1 0 0 1 0)
+ (1 0 0 1 0 1 0 0 1 0 1 0 0 1 0 1 0 0 0 0 1 0 0 1 0)
+ (1 0 0 1 0 1 1 1 1 0 1 0 0 1 0 1 1 1 0 0 1 0 0 1 0)
+ (1 1 1 0 0 1 0 0 1 0 1 1 1 0 0 1 0 0 0 0 1 0 0 1 0)
+ (1 0 0 0 0 1 0 0 1 0 1 0 0 0 0 1 0 0 0 0 1 0 0 1 0)
+ (1 0 0 0 0 1 0 0 1 0 1 0 0 0 0 1 1 1 1 0 0 1 1 0 0))
+
+
+((1 1 1     1     1   1 1 1     1 1 1 1   1     1  )
+ (1     1   1     1   1     1   1         1     1  )
+ (1     1   1 1 1 1   1     1   1 1 1     1     1  )
+ (1 1 1     1     1   1 1 1     1         1     1  )
+ (1         1     1   1         1         1     1  )
+ (1         1     1   1         1 1 1 1     1 1    ))
+
+
+=> PHPEU
+)
