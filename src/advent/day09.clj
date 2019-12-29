@@ -300,5 +300,23 @@
 
 (comment
   (part1)
-  ;; => "write-output 2465411646"
+  ;; "output => 2465411646"
+  )
+
+
+
+;; ----------------------------------------------------------------------------------------------------
+;; Part2
+
+;; run in sensor boost mode by providing the input of 2
+
+(defn part2 []
+  (set-input 2)
+  (reset! base 0)
+  (intcode (input)))
+
+
+(comment
+  (part2)
+  ;; "output => 69781"
   )
