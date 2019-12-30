@@ -29,13 +29,13 @@
 ([0 4] [0 8] [0 9] [0 10] [0 11] [0 13] [0 15] [0 27] [1 0] [1 1] ...)
 "
   [m]
-  (let [get-rows-cols (fn [m] {:rows (count m)
-                               :cols (count (first m))})
-        {:keys [rows cols]} (get-rows-cols m)]
-    (for [row (range rows)
-          col (range cols)
-          :when (= 1 (get (get m row) col))]
-        [row col])))
+  (let [get-height-width (fn [m] {:height (count m)
+                                  :width (count (first m))})
+        {:keys [height width]} (get-height-width m)]
+    (for [y (range height)
+          x (range width)
+          :when (= 1 (get (get m y) x))]
+        [x y])))
 
 (defn build-map
   "Build a map of the positions where the position is the key.
@@ -51,12 +51,12 @@
 ;; Store the number of positions that are visible (not hidden by another position) 
 ;; Return the position with the highest number of visible positions
 
-(defn calc-slope [[r1 c1] [r2 c2]]
+(defn calc-slope [[x1 y1] [x2 y2]]
   ;; (/ (- r2 r1) (- c2 c1)
-  (Math/atan2 (- r2 r1) (- c2 c1))
+  (Math/atan2 (- x2 x1) (- y2 y1))
   )
 
-(defn calc-positions [pos m]
+(defn calc-slopes [pos m]
   (let [others (remove #{pos} (keys m))]
     ;; find the slope to reach from pos to each of the others
     ;; slope = (y2 - y1) / (x2 -1)
@@ -73,7 +73,7 @@
            acc m]
       (if (empty? pos)
         acc
-        (recur (rest pos) (calc-positions (first pos) acc))))))
+        (recur (rest pos) (calc-slopes (first pos) acc))))))
 
 
 (defn part1 []
@@ -89,4 +89,111 @@
   (part1)
   ;;=> 329
   )
+
+
+
+;; ----------------------------------------------------------------------------------------------------
+;; Part 1 Examples
+
+;; NOTE: Explaination uses cols, rows or X, Y when describint points
+;; Lest' change to match it
+;; Also, 0,0 is in the upper left
+
+;; The asteroids can be described with X,Y coordinates where X is the
+;; distance from the left edge and Y is the distance from the top edge
+;; (so the top-left corner is 0,0 and the position immediately to its
+;; right is 1,0).
+
+
+;; So, what I was calling rows is Ys and cols are Xs
+
+(def ex1
+".#..#
+.....
+#####
+....#
+...##")
+
+(def ex2
+"......#.#.
+#..#.#....
+..#######.
+.#.#.###..
+.#..#.....
+..#....#.#
+#..#....#.
+.##.#..###
+##...#..#.
+.#....####")
+
+(def ex3
+"#.#...#.#.
+.###....#.
+.#....#...
+##.#.#.#.#
+....#.#.#.
+.##..###.#
+..#...##..
+..##....##
+......#...
+.####.###.")
+
+(def ex4
+".#..#..###
+####.###.#
+....###.#.
+..###.##.#
+##.##.#.#.
+....###..#
+..#.#..#.#
+#..#.#.###
+.##...##.#
+.....#.#..")
+
+(def ex5
+".#..##.###...#######
+##.############..##.
+.#.######.########.#
+.###.#######.####.#.
+#####.##.#.##.###.##
+..#####..#.#########
+####################
+#.####....###.#.#.##
+##.#################
+#####.##.###..####..
+..######..##.#######
+####.##.####...##..#
+.#####..#.######.###
+##...#.##########...
+#.##########.#######
+.####.#.###.###.#.##
+....##.##.###..#####
+.#.#.###########.###
+#.#.#.#####.####.###
+###.##.####.##.#..##")
+
+(defn load-example [ex]
+  (let [parse (fn [s] (mapv (fn [c] (if (= c \.) 0 1)) s))]
+    (mapv parse (clojure.string/split ex #"\n"))))
+
+
+
+(defn test-examples []
+  (and
+     (= (first (->> ex1 load-example positions build-map process (apply max-key val)))
+     [3 4])
+  
+  (= (first (->> ex2 load-example positions build-map process (apply max-key val)))
+     [5 8])
+  
+  (= (first (->> ex3 load-example positions build-map process (apply max-key val)))
+     [1 2])
+  
+  (= (first (->> ex4 load-example positions build-map process (apply max-key val)))
+     [6 3])
+  
+  (= (first (->> ex5 load-example positions build-map process (apply max-key val)))
+     [11 13])
+  )
+)
 
