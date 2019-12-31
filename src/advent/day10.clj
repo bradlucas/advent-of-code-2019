@@ -197,3 +197,75 @@
   )
 )
 
+;; ----------------------------------------------------------------------------------------------------
+;; Part 2
+
+
+;; IDEA:
+;; Find the best position (part1)
+;; Find the distance to each of the other positions as well as the slopes
+;; Sort the slopes
+;; Remove each in turn removing the closes if there are multiple positions on the same slope
+;; Iterate till done
+;; Which one will be the 200th position to delete?
+;;
+;; Reviewed:
+;; @see https://github.com/transducer/adventofcode/blob/master/src/adventofcode/2019/day10.clj
+;; @see https://github.com/erdos/advent-of-code-2019/blob/master/day10.clj
+
+
+(def ex6
+".#....#####...#..
+##...##.#####..##
+##...#...#.#####.
+..#.....X...###..
+..#.#.....#....##")
+
+
+(comment
+  (= (first (->> ex6 load-example positions build-map process (apply max-key val)))
+     [8 3])
+)
+
+
+;; (get-positions (load-example ex5))
+;; (get-positions (input))
+(defn get-positions [input-data]
+  (->> input-data
+       positions
+       build-map
+       process))
+
+(defn get-best-position [m]
+  (->> m
+       (apply max-key val)
+       first))
+
+(defn other-positions [pos m]
+  (remove #{pos} (keys m)))
+
+(defn angle [[x1  y1] [xx yy]]
+  (-> (Math/atan2  (- xx x1) (- yy y1))
+      (-)
+      (+ Math/PI)
+      (rem (* 2 Math/PI))))
+
+(defn dist [[x1 y1] [x y]]
+  (+ (Math/pow (- x x1) 2) (Math/pow (- y y1) 2)))
+
+
+(defn part2 []
+  (let [positions (get-positions (input))
+        pos (get-best-position positions)
+        positions (other-positions pos positions)]
+    (->> positions
+         (sort-by (partial dist pos))
+         (group-by (partial angle pos))
+         (sort-by key)
+         (map val)
+         (iterate (partial keep next))
+         (map (partial keep first))
+         (apply concat)
+         (#(nth % (dec 200)))
+         (#(+ (* 100 (first %)) (second %))))))
+
