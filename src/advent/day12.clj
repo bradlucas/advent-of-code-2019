@@ -71,3 +71,77 @@
   )
 
 
+
+
+;; ----------------------------------------------------------------------------------------------------
+;; Part 2
+
+;; How many steps till a state is repeated
+
+
+;; Brute force, doesn't return
+(defn repeat-til-duplicate [moons]
+  (loop [seen #{}
+         cnt 0
+         moons moons]
+    (if (seen moons)
+      cnt
+      (recur (conj seen moons) (inc cnt) (step moons)))))
+
+;; h/t @see https://github.com/Average-user/adventofcode-clj-2019/blob/master/src/adventofcode_clj_2019/day12.clj
+;; h/t @see https://github.com/stubillwhite/advent-of-code-2019/blob/master/src/advent_of_code_2019/day_12.clj
+;; h/t @see  https://github.com/ackerleytng/2019-advent-of-code/blob/master/12-nbody/core.clj
+
+;; Find the steps for a cycle for each axis
+;; then calculate the lcm for the three
+
+(defn- gcd [a b]
+  (if (zero? b)
+    a
+    (recur b (mod a b))))
+ 
+(defn- lcm [a b]
+  (/ (* a b) (gcd a b)))
+
+(defn xs [m]
+  (map (fn [{:keys [position velocity]}] [(first position) (first velocity)]) m))
+
+(defn ys [m]
+  (map (fn [{:keys [position velocity]}] [(second position) (second velocity)]) m))
+
+(defn zs [m]
+  (map (fn [{:keys [position velocity]}] [(nth position 2) (nth velocity 2)]) m))
+
+(defn repeat-til-duplicate-axis [moons axis-fn]
+  (loop [seen #{}
+         cnt 0
+         moons moons]
+    (let [v (axis-fn moons)]
+      (if (seen v)
+      cnt
+      (recur (conj seen v) (inc cnt) (step moons))))))
+
+
+;; advent.day12> (repeat-til-duplicate-axis xs m)
+;; 268296
+;; advent.day12> (repeat-til-duplicate-axis ys m)
+;; 113028
+;; advent.day12> (repeat-til-duplicate-axis zs m)
+;; 231614
+
+;; advent.day12> (reduce lcm [*1 *2 *3])
+;; 292653556339368
+
+(defn part2 []
+  (let [m (moons (input))]
+    (reduce lcm (map (partial repeat-til-duplicate-axis m) [xs ys zs]))))
+
+
+
+(comment
+  (part2)
+  ;; => 292653556339368
+)
+
+
+
