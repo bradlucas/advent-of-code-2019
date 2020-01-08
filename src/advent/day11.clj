@@ -362,3 +362,35 @@
 )
 
 
+;; ----------------------------------------------------------------------------------------------------
+;; Part 2
+
+
+(defn part2 []
+  (reset! base 0)
+  (reset-queues)
+  (let [grid (:grid (robot (input) {[0 0] 1}))
+        ones (map first (filter (fn [[k v]] (= v 1)) grid))    ;; positions that are painted white (1)
+
+        ;; ;; corners [x y]
+        minx (apply min (map #(first %) ones))
+        maxx (apply max (map #(first %) ones))
+        miny (apply min (map #(second %) ones))
+        maxy (apply max (map #(second %) ones))]
+    ;; ;; build image
+    (mapv (fn [y] (str/join (map (fn [x] ({0 \space 1 \#} (grid [x y] 0))) (range minx (inc maxx))))) (reverse (range miny (inc maxy))))
+    )
+  )
+
+
+(comment
+  (part2)
+  ;; ["#### ###  #### ###  #  # #### #### ### "
+  ;;  "   # #  #    # #  # # #  #       # #  #"
+  ;;  "  #  #  #   #  #  # ##   ###    #  #  #"
+  ;;  " #   ###   #   ###  # #  #     #   ### "
+  ;;  "#    # #  #    #    # #  #    #    # # "
+  ;;  "#### #  # #### #    #  # #### #### #  #"]
+
+  ;; ZRZPKEZR
+)
