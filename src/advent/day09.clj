@@ -39,7 +39,7 @@
     v))
 
 (defn write-output [v]
-  (pp/pprint (format "output => %s" v))
+  ;;(pp/pprint (format "output => %s" v))
   (push-queue v))
 
 ;; ----------------------------------------------------------------------------------------------------
@@ -296,11 +296,14 @@
 (defn part1 []
   (set-input 1)
   (reset! base 0)
-  (intcode (input)))
+  (intcode (input))
+  (peek @q)
+  )
 
 (comment
   (part1)
   ;; "output => 2465411646"
+  ;; => 2465411646
   )
 
 
