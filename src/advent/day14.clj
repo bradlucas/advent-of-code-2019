@@ -196,3 +196,39 @@
   (part1
    ;; => 202617
    ))
+
+
+
+
+;; ----------------------------------------------------------------------------------------------------
+;; Part 2
+
+;; You have a trillion (1000000000000) units of ORE how much FUEL can you produce
+;; 
+
+
+(defn find-ore-amount-2 [num]
+  (find-ore-amount (load-reactions input-str) num))
+
+
+(defn bi-sect [fnc target]
+  (loop [a 1
+         b 1.0e9]
+    ;; find middle (bi-sect) between a and b
+    (if (< a b)
+      (let [num (long (+ (/ (- b a) 2) a))]
+        (if (> (fnc num) target)
+          (recur a num)
+          (recur (inc num) b)))
+      (dec a))))
+
+
+(defn part2 []
+  (let [trillion 1000000000000]
+    (bi-sect find-ore-amount-2 trillion)))
+
+
+(comment
+  (part2)
+  ;; => 7863863
+  )
