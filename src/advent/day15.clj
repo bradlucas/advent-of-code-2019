@@ -115,3 +115,59 @@ program state is accepted as:
   (part1)
   ;; => 204
   )
+
+
+
+;; ----------------------------------------------------------------------------------------------------
+;; Part 2
+
+
+;; Find the oxygen system like in part1. Then each minute the oxygen spreads in each direction to adjacent locations.
+;; How many minutes will it take to fill the available region with oxygen
+
+;; Start
+;;  ##   
+;; #..## 
+;; #.#..#
+;; #.O.# 
+;;  ###  
+
+;; End
+;;  ##   
+;; #OO## 
+;; #O#OO#
+;; #OOO# 
+;;  ###  
+
+;; Build grid of available positions
+;; Start at the final (oxygen system) point
+;; Count steps to fill region
+
+;; Breadth First Search starting at the final state from Part 1
+;; Done when you run out of nodes
+
+;; @see https://github.com/fdlk/advent-2019/blob/master/src/advent_2019/day15.clj
+
+(defn breadth-first-search-2 [initial-state]
+  (loop [visited #{}
+         max-depth 0
+         todo (list [0 initial-state])]
+    (if (empty? todo)
+      [max-depth visited]
+      (let [[depth state] (first todo)
+            pos (:pos state)
+            new-visited (conj visited pos)]
+          (if (visited pos)
+            (recur new-visited max-depth (rest todo))
+            (recur new-visited (max max-depth depth) (concat (rest todo) (map (fn [x] [(inc depth) x]) (next-steps state)))))))))
+
+
+(defn part2 []
+  (let [[_ state] (breadth-first-search initial-state)]
+    (first (breadth-first-search-2 state))))
+
+
+(comment
+  (part2)
+  ;; => 
+  )
